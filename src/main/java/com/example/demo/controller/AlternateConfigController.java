@@ -32,12 +32,14 @@ public class AlternateConfigController {
     private ResourceRepository resourceRepository;
     @Value("${spring.cloud.config.server.defaultBranch:master}")
     private String defaultBranch;
+    private FileUtil fileUtil;
     private ObjectMapper objectMapper;
 
     @Autowired
-    AlternateConfigController(EnvironmentEncryptor environmentEncryptor, ResourceRepository resourceRepository) {
+    AlternateConfigController(EnvironmentEncryptor environmentEncryptor, ResourceRepository resourceRepository, FileUtil fileUtil) {
         this.environmentEncryptor = environmentEncryptor;
         this.resourceRepository = resourceRepository;
+        this.fileUtil = fileUtil;
         this.objectMapper = new ObjectMapper();
     }
 
@@ -45,7 +47,7 @@ public class AlternateConfigController {
     public String getJson(@PathVariable final String directory, @PathVariable final String fileName, final HttpServletRequest request) throws Exception {
         String fileToFind = FilenameUtils.getName(request.getRequestURL().toString());
         forceClone(fileToFind);
-        String json = FileUtil.getFileText(directory, fileToFind);
+        String json = fileUtil.getFileText(directory, fileToFind);
         Map<?, ?> decryptedPropMap = decryptPropertyMap(JsonFlattener.flattenAsMap(json));
 
         return JsonUnflattener.unflatten(objectMapper.writeValueAsString(decryptedPropMap));
@@ -55,7 +57,7 @@ public class AlternateConfigController {
     public String getYaml(@PathVariable final String directory, @PathVariable final String fileName, final HttpServletRequest request) throws Exception {
         String fileToFind = FilenameUtils.getName(request.getRequestURL().toString());
         forceClone(fileToFind);
-        String yaml = FileUtil.getFileText(directory, fileToFind);
+        String yaml = fileUtil.getFileText(directory, fileToFind);
         Map<?, ?> decryptedPropMap = decryptPropertyMap((Map<?, ?>) new Yaml().load(yaml));
 
         return new Yaml().dumpAsMap(decryptedPropMap);

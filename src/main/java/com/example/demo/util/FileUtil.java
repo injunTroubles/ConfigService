@@ -1,6 +1,8 @@
 package com.example.demo.util;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.config.server.resource.NoSuchResourceException;
+import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -11,9 +13,13 @@ import java.util.stream.Stream;
 /**
  * Created by rvann on 7/17/17.
  */
+@Component
 public class FileUtil {
 
-    static public String getFileText(String directory, String fileName) {
+    @Value("${spring.cloud.config.server.git.basedir:#{systemProperties['java.io.tmpdir']}}")
+    private String baseDir;
+
+    public String getFileText(String directory, String fileName) {
         String filePath = getFilePath(directory, fileName);
         StringWriter writer = new StringWriter();
         try (Stream<String> lines = Files.lines(Paths.get(filePath))) {
@@ -25,11 +31,14 @@ public class FileUtil {
         return writer.toString();
     }
 
-    static public String getFilePath(String directory, String fileName) {
+    private String getFilePath(String directory, String fileName) {
         String tempDir = System.getProperty("java.io.tmpdir");
+        System.out.println(tempDir);
+        System.out.println(baseDir);
+
         String str = null;
         try {
-            str = Files.find(Paths.get(tempDir), 5,
+            str = Files.find(Paths.get(baseDir), 5,
                     (path, attr) -> path.getFileName().endsWith(fileName))
                     .filter(path -> path.getParent().endsWith(directory))
                     .findFirst().map(foundPath -> foundPath.toString())

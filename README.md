@@ -71,9 +71,9 @@ https://cloud.spring.io/spring-cloud-config/spring-cloud-config.html#_encryption
 
 ### Custom Config Endpoints
 ```
-/alternate/{application}/{fileName}.json
-/alternate/{application}/fileName}.yaml
-/alternate/{application}/fileName}.yml
+/alternate/{directory}/{fileName}.json
+/alternate/{directory}/fileName}.yaml
+/alternate/{directory}/fileName}.yml
 ```
 
 ### Setup

@@ -1,5 +1,6 @@
 package com.example.demo;
 
+import com.example.demo.exception.APIAuthExceptionHandler;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -13,6 +14,8 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
+    APIAuthExceptionHandler exceptionHandler = new APIAuthExceptionHandler();
+
     @Override
     public void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth.inMemoryAuthentication()
@@ -25,6 +28,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     public void configure(HttpSecurity http) throws Exception {
         http.csrf().disable()
                 .exceptionHandling()
+                .accessDeniedHandler(exceptionHandler)
                 .and()
                 .authorizeRequests()
                 .antMatchers("/version/**").permitAll()
@@ -32,6 +36,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/actuator/info/**").permitAll()
                 .antMatchers("/actuator/**", "/decrypt/**").hasAuthority("ADMIN")
                 .antMatchers("/**").hasAnyAuthority("CONFIG_CLIENT", "ADMIN")
-                .and().httpBasic();
+                .and().httpBasic().authenticationEntryPoint(exceptionHandler);
     }
 }

@@ -32,10 +32,6 @@ public class FileUtil {
     }
 
     private String getFilePath(String directory, String fileName) {
-        String tempDir = System.getProperty("java.io.tmpdir");
-        System.out.println(tempDir);
-        System.out.println(baseDir);
-
         String str = null;
         try {
             str = Files.find(Paths.get(baseDir), 5,

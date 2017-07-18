@@ -71,10 +71,6 @@ public class AlternateConfigController {
     }
 
     private void forceClone(String fileName) {
-        try {
-            resourceRepository.findOne("arbitrary", "arbitrary", defaultBranch, fileName);
-        } catch (Exception e) {
-            // do nothing
-        }
+        resourceRepository.findOne("arbitrary", "arbitrary", defaultBranch, fileName);
     }
 }
